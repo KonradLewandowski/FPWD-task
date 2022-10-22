@@ -1,45 +1,64 @@
-const { readHelper, writeHelper } = require('../helper/repository.helper')
-
-const memo = () => {}
+const {
+  readHelper,
+  writeHelper,
+  findHelper
+} = require('../helper/repository.helper')
 
 const makeQuestionRepository = fileName => {
   const getQuestions = async () => {
     const questions = await readHelper(fileName)
+    if (!questions) return
 
     return questions
   }
 
   const getQuestionById = async questionId => {
     const questions = await readHelper(fileName)
+    const question = findHelper(questions, 'id', questionId)
 
-    return questions.filter(({ id }) => id === questionId)
+    if (!question) return
+
+    return { ...question }
   }
 
   const addQuestion = async question => {
-    const questions = await readHelper(fileName)
-    const data = [...questions, question]
+    if (!question.author || !question.summary) return
 
-    await writeHelper(fileName, data)
+    const questions = await readHelper(fileName)
+
+    if (!questions) return
+
+    const newQuestionsArray = [...questions, question]
+
+    await writeHelper(fileName, newQuestionsArray)
 
     return await readHelper(fileName)
   }
 
   const getAnswers = async questionId => {
     const questions = await readHelper(fileName)
+    const question = findHelper(questions, 'id', questionId)
 
-    return questions.filter(({ id }) => id === questionId)[0].answers
+    if (!question) return
+
+    return question.answers
   }
 
   const getAnswer = async (questionId, answerId) => {
     const questions = await readHelper(fileName)
-    return questions
-      .filter(({ id }) => id === questionId)[0]
-      .answers.filter(({ id }) => id === answerId)
+    const question = findHelper(questions, 'id', questionId)
+
+    if (!question) return
+    if (!question.answers.find(({ id }) => id === answerId)) return
+
+    return question.answers.find(({ id }) => id === answerId)
   }
 
   const addAnswer = async (questionId, answer) => {
+    if (!answer.author || !answer.summary) return
+
     const questions = await readHelper(fileName)
-    const question = questions.find(({ id }) => id === questionId)
+    const question = findHelper(questions, 'id', questionId)
 
     question.answers = [...new Set([...question.answers, answer])]
 
@@ -50,25 +69,31 @@ const makeQuestionRepository = fileName => {
 
   const deleteQuestion = async questionId => {
     const questions = await readHelper(fileName)
+    const question = findHelper(questions, 'id', questionId)
 
-    const data = questions.filter(({ id }) => id !== questionId)
+    if (!question) return
 
-    await writeHelper(fileName, data)
+    const newQuestionsArray = questions.filter(({ id }) => id !== questionId)
 
-    return data
+    await writeHelper(fileName, newQuestionsArray)
+
+    return newQuestionsArray
   }
 
   const deleteAnswer = async (questionId, answerId) => {
     const questions = await readHelper(fileName)
-    const question = questions.find(({ id }) => id === questionId)
+    const question = findHelper(questions, 'id', questionId)
+
+    if (!question) return
+    if (!question.answers.find(({ id }) => id === answerId)) return
 
     question.answers = question.answers.filter(({ id }) => id !== answerId)
 
-    const data = [...new Set([...questions, question])]
+    const newQuestionsArray = [...new Set([...questions, question])]
 
-    await writeHelper(fileName, data)
+    await writeHelper(fileName, newQuestionsArray)
 
-    return data
+    return newQuestionsArray
   }
 
   return {

@@ -1,5 +1,4 @@
 const { writeFile, rm } = require('fs/promises')
-const { faker } = require('@faker-js/faker')
 const { makeQuestionRepository } = require('./question')
 
 describe('question repository', () => {
@@ -23,13 +22,13 @@ describe('question repository', () => {
   test('should return a list of 2 questions', async () => {
     const testQuestions = [
       {
-        id: faker.datatype.uuid(),
+        id: 1,
         summary: 'What is my name?',
         author: 'Jack London',
         answers: []
       },
       {
-        id: faker.datatype.uuid(),
+        id: 2,
         summary: 'Who are you?',
         author: 'Tim Doods',
         answers: []
@@ -57,9 +56,18 @@ describe('question repository', () => {
       }
     ]
 
+    const testQuestionToEqual = {
+      id: 2,
+      summary: 'Who are you?',
+      author: 'Tim Doods',
+      answers: []
+    }
+
     await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
 
-    expect(await questionRepo.getQuestionById(2)).toHaveLength(1)
+    console.log(await questionRepo.getQuestionById(2))
+
+    expect(await questionRepo.getQuestionById(2)).toEqual(testQuestionToEqual)
   })
 
   test('should return a list of 3 questions', async () => {
@@ -92,7 +100,7 @@ describe('question repository', () => {
   })
 
   test('should return a list of 2 answers', async () => {
-    const testQuestions = [
+    const testAnswers = [
       {
         id: 1,
         summary: 'What is my name?',
@@ -112,13 +120,13 @@ describe('question repository', () => {
       }
     ]
 
-    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testAnswers))
 
     expect(await questionRepo.getAnswers(1)).toHaveLength(2)
   })
 
   test('should return a list of 1 answer filtered by ID ', async () => {
-    const testQuestions = [
+    const testAnswers = [
       {
         id: 1,
         summary: 'What is my name?',
@@ -138,13 +146,20 @@ describe('question repository', () => {
       }
     ]
 
-    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    const testAnswerToEqual = {
+      id: 2,
+      author: 'Dr Strange',
+      summary: 'It is egg-shaped.'
+    }
 
-    expect(await questionRepo.getAnswer(1, 2)).toHaveLength(1)
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testAnswers))
+
+    // expect(await questionRepo.getAnswer(1, 2)).toHaveLength(1)
+    expect(await questionRepo.getAnswer(1, 2)).toEqual(testAnswerToEqual)
   })
 
   test('should return a list of 3 answers', async () => {
-    const testQuestions = [
+    const testAnswers = [
       {
         id: 1,
         summary: 'What is my name?',
@@ -170,7 +185,7 @@ describe('question repository', () => {
       summary: 'It is working!'
     }
 
-    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testAnswers))
     await questionRepo.addAnswer(1, testAddAnswer)
 
     expect(await questionRepo.getAnswers(1)).toHaveLength(3)
@@ -200,7 +215,7 @@ describe('question repository', () => {
   })
 
   test('should return a list of 1 answer deleted by ID ', async () => {
-    const testQuestions = [
+    const testAnswers = [
       {
         id: 1,
         summary: 'What is my name?',
@@ -220,7 +235,7 @@ describe('question repository', () => {
       }
     ]
 
-    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testQuestions))
+    await writeFile(TEST_QUESTIONS_FILE_PATH, JSON.stringify(testAnswers))
 
     await questionRepo.deleteAnswer(1, 2)
 

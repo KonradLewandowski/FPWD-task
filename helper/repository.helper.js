@@ -8,9 +8,17 @@ const readHelper = async fileName => {
 }
 
 const writeHelper = async (fileName, data) => {
-  await writeFile(fileName, JSON.stringify(data, null, 2), error =>
-    error ? 'An error occured' : 'Data written successfully'
-  )
+  try {
+    await writeFile(fileName, JSON.stringify(data, null, 2), error =>
+      error ? 'An error occured' : 'Data written successfully'
+    )
+  } catch (error) {
+    return
+  }
 }
 
-module.exports = { readHelper, writeHelper }
+const findHelper = (elements, key, value) => {
+  return elements.find(element => element[key] === value)
+}
+
+module.exports = { readHelper, writeHelper, findHelper }
