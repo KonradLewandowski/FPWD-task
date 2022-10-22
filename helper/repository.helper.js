@@ -1,10 +1,14 @@
 const { readFile, writeFile } = require('fs/promises')
 
 const readHelper = async fileName => {
-  const fileContent = await readFile(fileName, { encoding: 'utf-8' })
-  const json = JSON.parse(fileContent)
+  try {
+    const fileContent = await readFile(fileName, { encoding: 'utf-8' })
+    const json = JSON.parse(fileContent)
 
-  return json
+    return json
+  } catch (error) {
+    return
+  }
 }
 
 const writeHelper = async (fileName, data) => {
