@@ -1,5 +1,6 @@
 const express = require('express')
 const { urlencoded, json } = require('body-parser')
+const { v4: uuidv4 } = require('uuid')
 const makeRepositories = require('./middleware/repositories')
 
 const STORAGE_FILE_PATH = 'questions.json'
@@ -37,7 +38,7 @@ app.get('/questions/:questionId', async (req, res) => {
 app.post('/questions', async (req, res) => {
   const { author, summary } = req.body
   const body = {
-    id: Math.random().toString(),
+    id: uuidv4(),
     author,
     summary,
     answers: []
@@ -79,7 +80,7 @@ app.post('/questions/:questionId/answers', async (req, res) => {
   const { author, summary } = req.body
 
   const body = {
-    id: Math.random().toString(),
+    id: uuidv4(),
     author,
     summary
   }

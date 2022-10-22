@@ -1,5 +1,7 @@
 const { readHelper, writeHelper } = require('../helper/repository.helper')
 
+const memo = () => {}
+
 const makeQuestionRepository = fileName => {
   const getQuestions = async () => {
     const questions = await readHelper(fileName)
@@ -37,12 +39,13 @@ const makeQuestionRepository = fileName => {
 
   const addAnswer = async (questionId, answer) => {
     const questions = await readHelper(fileName)
+    const question = questions.find(({ id }) => id === questionId)
 
-    questions.find(({ id }) => id === questionId).answers.push(answer)
+    question.answers = [...new Set([...question.answers, answer])]
 
     await writeHelper(fileName, questions)
 
-    return answer
+    return question.answers
   }
 
   const deleteQuestion = async questionId => {
